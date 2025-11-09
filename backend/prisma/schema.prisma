@@ -1,0 +1,148 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Tax Master Table
+model TaxMast {
+  taxCode       Int       @id @default(autoincrement())
+  taxDesc       String    @db.VarChar(50)
+  igst          Float     @default(0)
+  cgst          Float     @default(0)
+  sgst          Float     @default(0)
+  createdDate   DateTime  @default(now())
+  modifiedDate  DateTime? @updatedAt
+  createdBy     String    @db.VarChar(50)
+  
+  // Relations
+  productsPurchase ProdMast[] @relation("PurchaseTax")
+  productsSale     ProdMast[] @relation("SaleTax")
+}
+
+// Product Type Master
+model ProdTypeMast {
+  prodTypeCode      Int       @id @default(autoincrement())
+  prodTypeName      String    @db.VarChar(50)
+  prodTypeShortName String    @db.VarChar(3)
+  createdDate       DateTime  @default(now())
+  modifiedDate      DateTime? @updatedAt
+  createdBy         String    @db.VarChar(50)
+  
+  // Relations
+  products          ProdMast[]
+}
+
+// Product Category Master
+model ProdCatMast {
+  prodCatCode   Int       @id @default(autoincrement())
+  prodCatName   String    @db.VarChar(50)
+  createdDate   DateTime  @default(now())
+  modifiedDate  DateTime? @updatedAt
+  createdBy     String    @db.VarChar(50)
+  
+  // Relations
+  generics      GenericMast[]
+}
+
+// Manufacturer Master
+model MfrMast {
+  mfrCode       Int       @id @default(autoincrement())
+  mfrName       String    @db.VarChar(50)
+  mfrShortName  String    @db.VarChar(3)
+  address       String?   @db.VarChar(255)
+  city          String?   @db.VarChar(50)
+  state         String?   @db.VarChar(50)
+  pin           String?   @db.VarChar(10)
+  cpName        String?   @db.VarChar(50)
+  cpPhone       String?   @db.VarChar(20)
+  email         String?   @db.VarChar(50)
+  createdDate   DateTime  @default(now())
+  modifiedDate  DateTime? @updatedAt
+  createdBy     String    @db.VarChar(50)
+  
+  // Relations
+  products      ProdMast[]
+}
+
+// Schedule Type Master
+model SchTypeMast {
+  schTypeCode   Int       @id @default(autoincrement())
+  schTypeName   String    @db.VarChar(50)
+  createdDate   DateTime  @default(now())
+  modifiedDate  DateTime? @updatedAt
+  createdBy     String    @db.VarChar(50)
+  
+  // Relations
+  products      ProdMast[]
+}
+
+// Generic Master
+model GenericMast {
+  genericCode   Int       @id @default(autoincrement())
+  genericName   String    @db.VarChar(50)
+  prodCatCode   Int?
+  createdDate   DateTime  @default(now())
+  modifiedDate  DateTime? @updatedAt
+  createdBy     String    @db.VarChar(50)
+  
+  // Relations
+  category      ProdCatMast? @relation(fields: [prodCatCode], references: [prodCatCode])
+  productGenerics ProdGeneric[]
+}
+
+// Product Master
+model ProdMast {
+  prodCode      Int       @id @default(autoincrement())
+  prodName      String    @db.VarChar(50)
+  hsnCode       String?   @db.VarChar(15)
+  packing       String    @db.VarChar(50)
+  purUnit       String    @db.VarChar(20)
+  salUnit       String    @db.VarChar(20)
+  prodTypeCode  Int
+  mfrCode       Int
+  mrp           Float     @default(0)
+  purTaxCode    Int
+  salTaxCode    Int
+  schTypeCode   Int
+  isActive      Boolean   @default(true)
+  inActiveFrom  DateTime?
+  createdDate   DateTime  @default(now())
+  modifiedDate  DateTime? @updatedAt
+  createdBy     String    @db.VarChar(50)
+  
+  // Relations
+  productType   ProdTypeMast @relation(fields: [prodTypeCode], references: [prodTypeCode])
+  manufacturer  MfrMast      @relation(fields: [mfrCode], references: [mfrCode])
+  purchaseTax   TaxMast      @relation("PurchaseTax", fields: [purTaxCode], references: [taxCode])
+  saleTax       TaxMast      @relation("SaleTax", fields: [salTaxCode], references: [taxCode])
+  scheduleType  SchTypeMast  @relation(fields: [schTypeCode], references: [schTypeCode])
+  productGenerics ProdGeneric[]
+}
+
+// Product Generic Mapping
+model ProdGeneric {
+  id              Int       @id @default(autoincrement())
+  prodCode        Int
+  genericCode     Int
+  genericStrength String    @db.VarChar(50)
+  createdDate     DateTime  @default(now())
+  modifiedDate    DateTime? @updatedAt
+  createdBy       String    @db.VarChar(50)
+  
+  // Relations
+  product         ProdMast     @relation(fields: [prodCode], references: [prodCode])
+  generic         GenericMast  @relation(fields: [genericCode], references: [genericCode])
+  
+  // Unique constraint to prevent duplicate mappings
+  @@unique([prodCode, genericCode])
+}
