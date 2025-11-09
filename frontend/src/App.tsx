@@ -1,5 +1,5 @@
 import React from 'react';
-import { HashRouter as Router, Routes, Route, Link, useNavigate } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
 import {
   AppBar,
   Toolbar,
@@ -10,8 +10,6 @@ import {
   createTheme,
   Box,
   IconButton,
-  Menu,
-  MenuItem,
   Drawer,
   List,
   ListItem,
@@ -29,10 +27,8 @@ import {
   Business,
   Menu as MenuIcon,
   Add,
-  List as ListIcon,
   Category,
   Receipt,
-  Settings,
   Assessment,
   ChevronLeft,
 } from '@mui/icons-material';

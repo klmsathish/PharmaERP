@@ -27,10 +27,8 @@ import {
   ArrowBack,
   LocalPharmacy,
   AttachMoney,
-  Inventory,
   Category,
   Business,
-  Info,
   CheckCircle,
   Warning,
   MedicalServices,
@@ -81,7 +79,6 @@ const ProductForm: React.FC = () => {
     handleSubmit,
     formState: { errors },
     reset,
-    setValue,
     watch,
   } = useForm<ProductFormData>({
     defaultValues: {
@@ -104,9 +101,14 @@ const ProductForm: React.FC = () => {
 
   useEffect(() => {
     loadFormData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
     if (isEditMode) {
       loadProduct();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   const loadFormData = async () => {
