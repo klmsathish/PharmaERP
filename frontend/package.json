@@ -44,7 +44,10 @@
     "electron:build": "npm run build && electron-builder",
     "electron:build-mac": "npm run build && electron-builder --mac",
     "electron:build-win": "npm run build && electron-builder --win",
-    "electron:build-all": "npm run build && electron-builder --mac --win"
+    "electron:build-all": "npm run build && electron-builder --mac --win",
+    "tauri": "tauri",
+    "tauri:dev": "tauri dev",
+    "tauri:build": "tauri build"
   },
   "eslintConfig": {
     "extends": [
@@ -65,6 +68,7 @@
     ]
   },
   "devDependencies": {
+    "@tauri-apps/cli": "^2.1.0",
     "electron": "^39.1.1",
     "electron-builder": "^26.0.12"
   },
